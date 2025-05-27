@@ -115,7 +115,7 @@ export default function OrderServicePage() {
 			<div className="space-y-6">
 				<div>
 					<h2 className="mb-4 text-lg font-semibold text-black">
-						Select Service
+						Pilih Layanan
 					</h2>
 					<div className="space-y-6">
 						{serviceGroups.map((group) => (
@@ -131,16 +131,15 @@ export default function OrderServicePage() {
 												?.message || ''
 										return (
 											<Card
-												className={`bg-gray-300 ${formData.service === option.value ? 'ring-2 ring-red-500' : ''}`}
+												className={`cursor-pointer bg-white ${formData.service === option.value ? 'ring-2 ring-black' : ''}`}
 												key={option.value}
 												onClick={() => handleSelectService(option.value)}
-												style={{ cursor: 'pointer' }}
 											>
 												<CardContent className="flex items-start space-x-3">
 													<div className="flex-1">
 														<Label
 															htmlFor={option.value}
-															className="text-base font-medium"
+															className="text-base font-medium text-black"
 														>
 															{option.title}
 														</Label>
@@ -149,13 +148,13 @@ export default function OrderServicePage() {
 															{option.desc}
 														</p>
 
-														<p className="mt-1 font-medium">
+														<p className="mt-1 font-medium text-black">
 															{formatPrice(option.price)}
 														</p>
 
 														{itemQuantity > 0 && (
 															<Input
-																className="mt-2"
+																className="mt-2 w-[250px] text-black"
 																placeholder="Pesan khusus (opsional)"
 																value={itemMessage}
 																onClick={(e) => e.stopPropagation()}
@@ -176,12 +175,12 @@ export default function OrderServicePage() {
 																	e.stopPropagation()
 																	removeFromCart(option.value)
 																}}
-																className="flex h-8 w-8 items-center justify-center rounded-md border border-red-500 text-red-500"
+																className="flex h-8 w-8 items-center justify-center rounded-md border border-black text-black hover:bg-gray-100"
 															>
 																-
 															</button>
 
-															<span className="mx-4 font-medium">
+															<span className="mx-4 font-medium text-black">
 																{itemQuantity}
 															</span>
 
@@ -190,7 +189,7 @@ export default function OrderServicePage() {
 																	e.stopPropagation()
 																	addToCart(option.value)
 																}}
-																className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 text-white"
+																className="flex h-8 w-8 items-center justify-center rounded-md bg-black text-white hover:bg-gray-800"
 															>
 																+
 															</button>
@@ -202,7 +201,7 @@ export default function OrderServicePage() {
 																	e.stopPropagation()
 																	addToCart(option.value)
 																}}
-																className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 text-white"
+																className="flex h-8 w-8 items-center justify-center rounded-md bg-black text-white hover:bg-gray-800"
 															>
 																+
 															</button>
@@ -227,7 +226,7 @@ export default function OrderServicePage() {
 							Total Harga
 						</Label>
 						<div
-							className={`font-bold ${totalItems > 0 ? 'text-red-500' : 'text-gray-400'}`}
+							className={`font-bold ${totalItems > 0 ? 'text-black' : 'text-gray-400'}`}
 						>
 							{formatPrice(totalPrice)}
 						</div>
@@ -235,12 +234,12 @@ export default function OrderServicePage() {
 
 					<Button
 						type="button"
-						className="w-full max-w-xs bg-gray-300"
+						className="w-full max-w-xs bg-black text-white hover:bg-gray-800"
 						disabled={cartItems.length === 0}
 						onClick={handleContinue}
 					>
 						<Link href={route('order.contact')} className="w-full">
-							Continue
+							Lanjutkan
 						</Link>
 					</Button>
 				</div>
