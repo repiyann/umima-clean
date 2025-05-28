@@ -18,4 +18,18 @@ Route::middleware('auth')->group(function () {
   Route::get('settings/appearance', function () {
     return Inertia::render('settings/appearance');
   })->name('appearance');
+
+  Route::get('settings/tes', [ProfileController::class, 'tes'])->name('profile.tes');
+
+  Route::get('/profile/settings', function () {
+    return Inertia::render('profile/settings');
+  })->name('profile.settings');
+
+  Route::get('/profile/track-order', function () {
+    return Inertia::render('profile/track-order');
+  })->name('profile.track-order');
+
+  Route::get('/profile/order-history', function () {
+    return Inertia::render('profile/order-history');
+  })->name('profile.order-history');
 });
