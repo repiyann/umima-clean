@@ -1,4 +1,4 @@
-# Chat Interaction Platform - Kabupaten Bandung
+# UMIMA Clean - Shoe and Bag Laundry
 
 ## Description
 
