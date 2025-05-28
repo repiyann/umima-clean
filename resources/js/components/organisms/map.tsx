@@ -1,122 +1,118 @@
-import { useLocation } from '@/hooks/use-map'
-import { LatLng } from 'leaflet'
-import { MapContainer } from 'react-leaflet'
-import LocationMarker from './map'
+import L, { LatLng } from 'leaflet'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import { useEffect, useState } from 'react'
+import {
+	MapContainer,
+	Marker,
+	Popup,
+	TileLayer,
+	useMapEvents,
+} from 'react-leaflet'
+import { toast } from 'sonner'
 
-export default function Map() {
-	const {
-		position,
-		setPosition,
-		road,
-		village,
-		subdistrict,
-		city,
-		postcode,
-		setRoad,
-		setVillage,
-		setSubdistrict,
-		setCity,
-		setPostcode,
-	} = useLocation()
+export interface MapProps {
+	position: LatLng
+	onPositionChange?: (position: LatLng) => void
+}
 
-	const bandungSubdistricts = [
-		'Coblong',
-		'Cidadap',
-		'Andir',
-		'Bandung Kidul',
-		'Bandung Wetan',
-		'Bojongloa Kidul',
-		'Astana Anyar',
-		'Kiaracondong',
-		'Rancasari',
-		'Sumur Bandung',
-		'Cibeunying Kidul',
-		'Cibeunying Wetan',
-		'Batununggal',
-		'Cimahi',
-		'Leuwi Gajah',
-		'Kopo',
-	]
+const customIcon = new L.Icon({
+	iconUrl: markerIcon,
+	iconRetinaUrl: markerIcon2x,
+	shadowUrl: markerShadow,
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41],
+})
 
-	async function searchAddress() {
-		const query = [road, village, subdistrict, city, postcode]
-			.filter(Boolean)
-			.join(', ')
-		if (!query) return alert('Please fill in some address fields.')
+function MapEvents({
+	setPosition,
+	position,
+}: {
+	position: LatLng
+	setPosition: (latlng: LatLng) => void
+}) {
+	const map = useMapEvents({
+		click(e) {
+			setPosition(e.latlng)
+		},
+	})
 
-		try {
-			const response = await fetch(
-				`https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1`
+	useEffect(() => {
+		map.flyTo(position, 15)
+	}, [map, position])
+
+	return null
+}
+
+export default function MapComponent({ position, onPositionChange }: MapProps) {
+	const [isDefaultLocation, setIsDefaultLocation] = useState<boolean>(true)
+
+	useEffect(() => {
+		getCurrentLocation()
+	}, [])
+
+	function getCurrentLocation() {
+		if ('geolocation' in navigator) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const { latitude, longitude } = position.coords
+					const latLng = L.latLng(latitude, longitude)
+					onPositionChange?.(latLng)
+					setIsDefaultLocation(false)
+					toast.success('Berhasil mendapatkan lokasi Anda')
+				},
+				(error) => {
+					toast.error('Gagal mendapatkan lokasi')
+					onPositionChange?.(position)
+					setIsDefaultLocation(true)
+				}
 			)
-			const data = await response.json()
-
-			if (data && data.length > 0) {
-				const { lat, lon } = data[0]
-				const latlng = new LatLng(lat, lon)
-				console.log('latlng', latlng)
-
-				setPosition(latlng)
-			} else {
-				alert('No matching address found')
-			}
-		} catch (error) {
-			console.error('Error fetching address:', error)
+		} else {
+			toast.error(
+				'Browser Anda tidak mendukung geolokasi. Menggunakan lokasi default.'
+			)
+			onPositionChange?.(position)
+			setIsDefaultLocation(true)
 		}
 	}
 
+	function handlePositionChange(newPosition: LatLng) {
+		onPositionChange?.(newPosition)
+		setIsDefaultLocation(false)
+	}
+
 	return (
-		<>
+		<div
+			style={{ height: '400px', width: '100%' }}
+			role="application"
+			aria-label="Interactive location map"
+		>
 			<MapContainer
-				center={
-					position
-						? { lat: position.lat, lng: position.lng }
-						: { lat: -6.914, lng: 107.609 }
-				}
-				zoom={15}
-				preferCanvas={true}
+				center={position}
+				zoom={13}
 				scrollWheelZoom={false}
-				style={{ height: '250px', width: '100%' }}
+				preferCanvas={true}
+				style={{
+					height: '100%',
+					width: '100%',
+					position: 'relative',
+					zIndex: 0,
+				}}
 			>
-				<LocationMarker />
+				<TileLayer
+					attribution="Google Maps Satellite"
+					url="https://www.google.com/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}"
+				/>
+				<MapEvents setPosition={handlePositionChange} position={position} />
+				<Marker position={position} icon={customIcon}>
+					<Popup>
+						{isDefaultLocation ? 'Lokasi Umima Clean' : 'Lokasi Anda Sekarang'}
+					</Popup>
+				</Marker>
 			</MapContainer>
-			<div style={{ position: 'fixed', top: '500px', left: '10px' }}>
-				<input
-					type="text"
-					placeholder="Road"
-					value={road}
-					onChange={(e) => setRoad(e.target.value)}
-				/>
-				<input
-					type="text"
-					placeholder="Village"
-					value={village}
-					onChange={(e) => setVillage(e.target.value)}
-				/>
-				<select
-					value={subdistrict}
-					onChange={(e) => setSubdistrict(e.target.value)}
-				>
-					<option value="">Select a Subdistrict</option>
-					{bandungSubdistricts.map((subdistrictName) => (
-						<option key={subdistrictName} value={subdistrictName}>
-							{subdistrictName}
-						</option>
-					))}
-				</select>
-				<input
-					type="text"
-					placeholder="City"
-					value={city}
-					onChange={(e) => setCity(e.target.value)}
-				/>
-				<input
-					type="text"
-					placeholder="Post Code"
-					value={postcode}
-					onChange={(e) => setPostcode(e.target.value)}
-				/>
-				<button onClick={searchAddress}>Search</button>
-			</div>
-		</>
+		</div>
 	)
 }
