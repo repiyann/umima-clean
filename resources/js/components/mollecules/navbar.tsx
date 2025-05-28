@@ -29,7 +29,7 @@ export default function Navbar() {
 						<span
 							className={`mt-0.5 text-xs ${isActive('/') ? 'font-medium text-sky-600' : 'text-gray-500'}`}
 						>
-							Home
+							Beranda
 						</span>
 					</Link>
 
@@ -45,12 +45,12 @@ export default function Navbar() {
 						<span
 							className={`mt-0.5 text-xs ${isActive('/order') ? 'font-medium text-sky-600' : 'text-gray-500'}`}
 						>
-							Order
+							Pesanan
 						</span>
 					</Link>
 
 					<Link
-						href={auth.user ? route('profile') : route('login')}
+						href={auth.user ? route('profile.edit') : route('login')}
 						className="flex flex-col items-center border-0 bg-transparent py-1"
 					>
 						<div
@@ -61,7 +61,7 @@ export default function Navbar() {
 						<span
 							className={`mt-0.5 text-xs ${isActive('/profile') ? 'font-medium text-sky-600' : 'text-gray-500'}`}
 						>
-							Account
+							Akun
 						</span>
 					</Link>
 				</div>

@@ -23,7 +23,7 @@ export default function OrderLayout({ children }: { children: ReactNode }) {
 						<ArrowLeft className="h-5 w-5" />
 					</Link>
 					<h1 className="flex-1 pr-5 text-center text-xl font-bold text-black">
-						Place Your Order
+						Buat Pesanan Anda
 					</h1>
 				</div>
 			</header>

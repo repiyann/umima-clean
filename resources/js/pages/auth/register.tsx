@@ -6,7 +6,7 @@ import TextLink from '@/components/atoms/text-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import AuthLayout from '@/pages/auth/layout'
+import AuthLayout from '@/components/templates/auth-layout'
 import { RegisterForm } from '@/types/auth'
 
 export default function RegisterPage() {
@@ -29,14 +29,14 @@ export default function RegisterPage() {
 
 	return (
 		<AuthLayout
-			title="Create an account"
-			description="Enter your details below to create your account"
+			title="Buat akun"
+			description="Masukkan detail Anda di bawah untuk membuat akun"
 		>
-			<Head title="Register" />
+			<Head title="Daftar" />
 			<form className="flex flex-col gap-6" onSubmit={submit}>
 				<div className="grid gap-6">
 					<div className="grid gap-2">
-						<Label htmlFor="name">Name</Label>
+						<Label htmlFor="name">Nama</Label>
 						<Input
 							id="name"
 							type="text"
@@ -47,14 +47,14 @@ export default function RegisterPage() {
 							value={data.name}
 							onChange={(e) => setData('name', e.target.value)}
 							disabled={processing}
-							placeholder="Full name"
+							placeholder="Nama lengkap"
 						/>
 
 						<InputError message={errors.name} className="mt-2" />
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="email">Email address</Label>
+						<Label htmlFor="email">Alamat Email</Label>
 						<Input
 							id="email"
 							type="email"
@@ -71,7 +71,7 @@ export default function RegisterPage() {
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password">Password</Label>
+						<Label htmlFor="password">Kata Sandi</Label>
 						<Input
 							id="password"
 							type="password"
@@ -81,14 +81,14 @@ export default function RegisterPage() {
 							value={data.password}
 							onChange={(e) => setData('password', e.target.value)}
 							disabled={processing}
-							placeholder="Password"
+							placeholder="Kata Sandi"
 						/>
 
 						<InputError message={errors.password} />
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password_confirmation">Confirm password</Label>
+						<Label htmlFor="password_confirmation">Konfirmasi Kata Sandi</Label>
 						<Input
 							id="password_confirmation"
 							type="password"
@@ -98,7 +98,7 @@ export default function RegisterPage() {
 							value={data.password_confirmation}
 							onChange={(e) => setData('password_confirmation', e.target.value)}
 							disabled={processing}
-							placeholder="Confirm password"
+							placeholder="Konfirmasi kata sandi"
 						/>
 
 						<InputError message={errors.password_confirmation} />
@@ -111,14 +111,14 @@ export default function RegisterPage() {
 						disabled={processing}
 					>
 						{processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-						Create account
+						Buat Akun
 					</Button>
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
-					Already have an account?{' '}
+					Sudah punya akun?{' '}
 					<TextLink href={route('login')} tabIndex={6}>
-						Log in
+						Masuk
 					</TextLink>
 				</div>
 			</form>
