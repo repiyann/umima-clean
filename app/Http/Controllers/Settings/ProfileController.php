@@ -12,6 +12,14 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+  public function tes(Request $request): Response
+  {
+    return Inertia::render('settings/profile-tes', [
+      'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+      'status'          => $request->session()->get('status'),
+    ]);
+  }
+
   /**
    * Show the user's profile settings page.
    */
