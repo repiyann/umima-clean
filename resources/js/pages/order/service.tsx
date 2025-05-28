@@ -1,7 +1,7 @@
+import Heading from '@/components/atoms/heading'
 import OrderLayout from '@/components/templates/order-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { serviceGroups } from '@/constants/order'
 import { formatPrice } from '@/lib/utils'
@@ -13,8 +13,7 @@ export default function OrderServicePage() {
 	const [cartItems, setCartItems] = useState<CartItem[]>([])
 	const [formData, setFormData] = useState<OrderServiceFormData>({
 		service: '',
-		quantity: 1,
-		message: '',
+		quantity: 0,
 	})
 
 	useEffect(() => {
@@ -50,7 +49,7 @@ export default function OrderServicePage() {
 				)
 			)
 		} else {
-			setCartItems([...cartItems, { id, quantity: 1, message: '' }])
+			setCartItems([...cartItems, { id, quantity: 1 }])
 		}
 
 		setFormData((prev) => ({ ...prev, service: id }))
@@ -69,14 +68,6 @@ export default function OrderServicePage() {
 			if (formData.service === id)
 				setFormData((prev) => ({ ...prev, service: '' }))
 		}
-	}
-
-	function handleMessageChange(id: string, value: string) {
-		setCartItems(
-			cartItems.map((item) =>
-				item.id === id ? { ...item, message: value } : item
-			)
-		)
 	}
 
 	function getItemQuantity(id: string) {
@@ -98,7 +89,22 @@ export default function OrderServicePage() {
 	const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0)
 	const totalPrice = cartItems.reduce((total, item) => {
 		const option = getServiceOption(item.id)
-		return total + (option ? option.price * item.quantity : 0)
+		if (!option) return total
+
+		let itemTotal = option.basePrice || option.price
+
+		if (item.selectedAddons && option.additionalCosts) {
+			item.selectedAddons.forEach((addonName) => {
+				const addon = option.additionalCosts?.find(
+					(cost) => cost.name === addonName
+				)
+				if (addon) {
+					itemTotal += addon.price
+				}
+			})
+		}
+
+		return total + itemTotal * item.quantity
 	}, 0)
 
 	const handleContinue = useCallback(() => {
@@ -114,9 +120,8 @@ export default function OrderServicePage() {
 		<OrderLayout>
 			<div className="space-y-6">
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-black">
-						Pilih Layanan
-					</h2>
+					<Heading className="flex justify-center" title="Pilih Layanan" />
+
 					<div className="space-y-6">
 						{serviceGroups.map((group) => (
 							<div key={group.label}>
@@ -126,9 +131,10 @@ export default function OrderServicePage() {
 								<div className="space-y-3">
 									{group.options.map((option) => {
 										const itemQuantity = getItemQuantity(option.value)
-										const itemMessage =
+										const selectedAddons =
 											cartItems.find((item) => item.id === option.value)
-												?.message || ''
+												?.selectedAddons || []
+
 										return (
 											<Card
 												className={`cursor-pointer bg-white ${formData.service === option.value ? 'ring-2 ring-black' : ''}`}
@@ -149,22 +155,61 @@ export default function OrderServicePage() {
 														</p>
 
 														<p className="mt-1 font-medium text-black">
-															{formatPrice(option.price)}
+															{option.basePrice
+																? `Mulai dari ${formatPrice(option.basePrice)}`
+																: formatPrice(option.price)}
 														</p>
 
-														{itemQuantity > 0 && (
-															<Input
-																className="mt-2 w-[250px] text-black"
-																placeholder="Pesan khusus (opsional)"
-																value={itemMessage}
-																onClick={(e) => e.stopPropagation()}
-																onChange={(e) =>
-																	handleMessageChange(
-																		option.value,
-																		e.target.value
-																	)
-																}
-															/>
+														{itemQuantity > 0 && option.additionalCosts && (
+															<div className="mt-2 space-y-2">
+																{option.additionalCosts.map((addon) => (
+																	<div
+																		key={addon.name}
+																		className="flex items-center space-x-2"
+																	>
+																		<input
+																			type="checkbox"
+																			id={`${option.value}-${addon.name}`}
+																			checked={selectedAddons.includes(
+																				addon.name
+																			)}
+																			onChange={(e) => {
+																				e.stopPropagation()
+																				const item = cartItems.find(
+																					(i) => i.id === option.value
+																				)
+																				if (item) {
+																					const newAddons = e.target.checked
+																						? [
+																								...(item.selectedAddons || []),
+																								addon.name,
+																							]
+																						: (
+																								item.selectedAddons || []
+																							).filter((a) => a !== addon.name)
+
+																					setCartItems(
+																						cartItems.map((i) =>
+																							i.id === option.value
+																								? {
+																										...i,
+																										selectedAddons: newAddons,
+																									}
+																								: i
+																						)
+																					)
+																				}
+																			}}
+																		/>
+																		<Label
+																			htmlFor={`${option.value}-${addon.name}`}
+																			className="text-sm text-gray-600"
+																		>
+																			{addon.name} (+{formatPrice(addon.price)})
+																		</Label>
+																	</div>
+																))}
+															</div>
 														)}
 													</div>
 
