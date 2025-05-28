@@ -1,15 +1,31 @@
-import { LatLng } from "leaflet"
+import { LatLng } from 'leaflet'
 
 export interface CartItem {
 	id: string
 	quantity: number
-	message?: string
+	selectedAddons?: string[]
+}
+
+interface ServiceGroup {
+	value: string
+	title: string
+	desc: string
+	price: number
+	basePrice?: number
+	additionalCosts?: {
+		name: string
+		price: number
+	}[]
+}
+
+export interface ServiceOption {
+	label: string
+	options: ServiceGroup[]
 }
 
 export interface OrderServiceFormData {
 	service: string
 	quantity: number
-	message: string
 }
 
 export interface OrderContactFormData {
